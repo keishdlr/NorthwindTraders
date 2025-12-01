@@ -24,8 +24,7 @@ public class NorthwindTraders {
                 PreparedStatement preparedStatement = connection.prepareStatement("""
                 SELECT
                     ProductName,
-                    UnitPrice,
-                    UnitsInStock
+                    UnitPrice
                 FROM
                     Products
                 ORDER BY
@@ -34,8 +33,7 @@ public class NorthwindTraders {
                 );
 
                 //get the results from the query
-                ResultSet results = preparedStatement.executeQuery()
-
+                ResultSet results = preparedStatement.executeQuery();
 
             //print the results
             printResults(results);
@@ -69,5 +67,4 @@ public class NorthwindTraders {
             System.out.println();
         }
     }
-
 }
