@@ -68,7 +68,7 @@ public class NorthwindTraders {
                     ORDER BY
                         ProductName
                     """
-            );
+            )
         ) {
               try( ResultSet results = preparedStatement.executeQuery()) {
                   //print the results
@@ -79,7 +79,7 @@ public class NorthwindTraders {
         }catch (SQLException e){
                     System.out.println("Could not get all the products");
                     System.exit(1);
-                }
+        }
     }
     public static void displayAllCustomers(Connection connection){
 
@@ -97,7 +97,7 @@ public class NorthwindTraders {
                              ORDER BY
                                  Country
                              """
-                     );
+                     )
                  ){
                     try( ResultSet results = preparedStatement.executeQuery()) {
 
@@ -106,7 +106,7 @@ public class NorthwindTraders {
                      System.out.println("Results error ");
                  }
 
-    } catch (SQLException e){
+             } catch (SQLException e){
                  System.out.println("Could not get all the customers");
                  System.exit(1);
                  }
@@ -124,7 +124,7 @@ public class NorthwindTraders {
                     ORDER BY
                         CategoryID
                     """
-                );
+                )
         ) {
             try( ResultSet results = preparedStatement.executeQuery()) {
                 //print the results
@@ -139,6 +139,32 @@ public class NorthwindTraders {
         //prompt user for category ID
         System.out.println("Select category ID to view products");
         Scanner myScanner = new Scanner(System.in);
+        int ID = myScanner.nextInt();
+        try(
+                PreparedStatement preparedStatement = connection.prepareStatement("""
+                    SELECT
+                        ProductName,
+                        CategoryID = ?
+                    FROM
+                        Products
+                    ORDER BY
+                        ProductName
+                    """
+                )
+        ) {
+            //set parameter on statement
+            preparedStatement.setInt(2,ID);
+
+            try( ResultSet results = preparedStatement.executeQuery()) {
+                //print the results
+                printResults(results);
+            }catch (SQLException e){
+                System.out.println("Results error");
+            }
+        }catch (SQLException e){
+            System.out.println("Could not get all the products");
+            System.exit(1);
+        }
 
     }
 
@@ -156,5 +182,5 @@ public class NorthwindTraders {
             System.out.printf("% -5d %-30s %-10.2f %-10d\n",
                     productID, productName, unitsInStock, unitPrice);
                 }
-            }
+    }
 }
