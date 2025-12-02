@@ -18,6 +18,7 @@ public class NorthwindTraders {
 
         Scanner myScanner = new Scanner(System.in);
 
+
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind", username, password)) {
 
             while (true) {
@@ -26,6 +27,7 @@ public class NorthwindTraders {
                         What do you want to do?
                             1) Display All Products
                             2) Display All Customers
+                            3) Display ALl Categories
                             0) Exit the dang app
                         """);
                 switch (myScanner.nextInt()) {
@@ -35,6 +37,8 @@ public class NorthwindTraders {
                     case 2:
                         displayAllCustomers(connection);
                         break;
+                    case 3:
+                        displayAllCategories(connection);
                     case 0:
                         System.out.println("Goodbye!");
                         System.exit(0);
@@ -43,15 +47,18 @@ public class NorthwindTraders {
                 }
 
 
-            }} catch(SQLException e) {
-            System.exit(1);
-        }
+            }} catch(SQLException e){
+                System.out.println("Could not connect to DB");
+                System.exit(1);
+            }
     }
 
     public static void displayAllProducts(Connection connection){
 
         //we got to try to run a query and get the results with a prepared statement
-        try (PreparedStatement preparedStatement = connection.prepareStatement("""
+        try (
+                //create the prepared statement using the passed in connection
+                PreparedStatement preparedStatement = connection.prepareStatement("""
                     SELECT
                         ProductName,
                         UnitPrice,
@@ -61,41 +68,75 @@ public class NorthwindTraders {
                     ORDER BY
                         ProductName
                     """
-        )) {
-               ResultSet results = preparedStatement.executeQuery();
-               printResults(results);  {
-                }
-        } catch (SQLException e){
+            );
+        ) {
+              try( ResultSet results = preparedStatement.executeQuery()) {
+                  //print the results
+                  printResults(results);
+              }catch (SQLException e){
+                  System.out.println("Results error");
+              }
+        }catch (SQLException e){
                     System.out.println("Could not get all the products");
                     System.exit(1);
                 }
-
     }
     public static void displayAllCustomers(Connection connection){
 
         //we got to try to run a query and get the results with a prepared statement
-        try (PreparedStatement preparedStatement = connection.prepareStatement("""
-                    SELECT
-                        ContactName,
-                        CompanyName,
-                        City,
-                        Country,
-                        PhoneNumber
-                    FROM
-                        Customers
-                    ORDER BY
-                        ContactName
-                    """
-        )) {
-            ResultSet results = preparedStatement.executeQuery();
-            printResults(results); {
+                 try(
+                     PreparedStatement preparedStatement = connection.prepareStatement("""
+                             SELECT
+                                 ContactName,
+                                 CompanyName,
+                                 City,
+                                 Country,
+                                 Phone
+                             FROM
+                                 Customers
+                             ORDER BY
+                                 Country
+                             """
+                     );
+                 ){
+                    try( ResultSet results = preparedStatement.executeQuery()) {
 
-            }
+                         printResults(results);
+                 }catch (SQLException e) {
+                     System.out.println("Results error ");
+                 }
 
-        } catch (SQLException e){
-                 System.out.println("Could not get all the products");
+    } catch (SQLException e){
+                 System.out.println("Could not get all the customers");
                  System.exit(1);
+                 }
+    }
+    public static void displayAllCategories(Connection connection){
+        //we got to try to run a query and get the results with a prepared statement
+        try (
+                //create the prepared statement using the passed in connection
+                PreparedStatement preparedStatement = connection.prepareStatement("""
+                    SELECT
+                        CategoryID,
+                        CategoryName,
+                    FROM
+                        Categories
+                    ORDER BY
+                        CategoryID
+                    """
+                );
+        ) {
+            try( ResultSet results = preparedStatement.executeQuery()) {
+                //print the results
+                printResults(results);
+            }catch (SQLException e){
+                System.out.println("Results error");
+            }
+        }catch (SQLException e){
+            System.out.println("Could not get all the categories");
+            System.exit(1);
         }
+        System.out.println("which category ID would you like to view");
     }
 
     public static void printResults (ResultSet results) throws SQLException {
@@ -103,7 +144,6 @@ public class NorthwindTraders {
         System.out.printf("%-5s %-30s %-10s %-10s\n",
                 "ID", "Name", "price", "Available");
         System.out.println("-------------------------------------------------------");
-
         while (results.next()) {
             // column values
             int productID = results.getInt("productID");
@@ -114,5 +154,4 @@ public class NorthwindTraders {
                     productID, productName, unitsInStock, unitPrice);
                 }
             }
-
 }
