@@ -20,23 +20,41 @@ public class NorthwindTraders {
 
 
         try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind",username, password)){
-                // create the prepared statement using the query
-                PreparedStatement preparedStatement = connection.prepareStatement("""
-                SELECT
-                    ProductName,
-                    UnitPrice
-                FROM
-                    Products
-                ORDER BY
-                    ProductName
-                """
-                );
+                                       // version 1
 
-                //get the results from the query
-                ResultSet results = preparedStatement.executeQuery();
+            // create the prepared statement using the query
+            //    PreparedStatement preparedStatement = connection.prepareStatement("""
+            //       SELECT
+            //          ProductName,
+            //             UnitPrice
+            //         FROM
+            //             Products
+            //         ORDER BY
+            //           ProductName
+            //          """
+            //         );
+            //      //get the results from the query
+            //    ResultSet results = preparedStatement.executeQuery();
 
-            //print the results
-            printResults(results);
+            //      //print the results
+            //        printResults(results);
+
+                                        // version 2
+
+            //1. create the connection
+            System.out.println("Connected to db");
+            Statement statement = connection.createStatement();
+            String query = "SELECT productName, UnitPrice FROM Products;";
+
+            //2. Execute your query
+            ResultSet results = statement.executeQuery(query);
+
+            //process the results
+            while(results.next()){
+                String productName = results.getString(1);
+                double unitPrice = results.getDouble("UnitPrice");
+                System.out.println(productName + " ; " + unitPrice);
+            }
 
         }catch (SQLException e){
             System.out.println("Could not get all the products");
