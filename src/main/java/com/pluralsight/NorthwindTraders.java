@@ -136,6 +136,7 @@ public class NorthwindTraders {
             System.out.println("Could not get all the categories");
             System.exit(1);
         }
+        //prompt user for category ID
         System.out.println("Select category ID to view products");
         Scanner myScanner = new Scanner(System.in);
 
