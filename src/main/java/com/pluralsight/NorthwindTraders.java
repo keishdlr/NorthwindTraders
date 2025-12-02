@@ -136,7 +136,9 @@ public class NorthwindTraders {
             System.out.println("Could not get all the categories");
             System.exit(1);
         }
-        System.out.println("which category ID would you like to view");
+        System.out.println("Select category ID to view products");
+        Scanner myScanner = new Scanner(System.in);
+
     }
 
     public static void printResults (ResultSet results) throws SQLException {
