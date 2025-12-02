@@ -1,11 +1,11 @@
 package com.pluralsight;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class NorthwindTraders {
 
     public static void main(String[] args) {
-
         // did we pass in a username and password
         // if not the app must die
         if (args.length != 2) {
@@ -16,72 +16,103 @@ public class NorthwindTraders {
         String username = args[0];
         String password = args[1];
 
+        Scanner myScanner = new Scanner(System.in);
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind", username, password)) {
 
-             //create the prepared statement using the query
-                PreparedStatement preparedStatement = connection.prepareStatement("""
-                   SELECT
-                      ProductName,
-                      ProductID,
-                      UnitsInStock,
-                      UnitPrice
-                     FROM
-                         Products
-                     ORDER BY
-                       ProductID
-                   """);
-                  //get the results from the query
-            System.out.printf("%-5s %-30s %-10s %-10s\n",
-                          "ID", "Name", "price", "Available");
-                   System.out.println("-------------------------------------------------------");
-                ResultSet results = preparedStatement.executeQuery();
+            while (true) {
 
-                  //print the results
-                printResults(results);
+                System.out.println("""
+                        What do you want to do?
+                            1) Display All Products
+                            2) Display All Customers
+                            0) Exit the dang app
+                        """);
+                switch (myScanner.nextInt()) {
+                    case 1:
+                        displayAllProducts(connection);
+                        break;
+                    case 2:
+                        displayAllCustomers(connection);
+                        break;
+                    case 0:
+                        System.out.println("Goodbye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid Input");
+                }
 
 
-        } catch (SQLException e) {
-            System.out.println("Could not get all the products");
+            }} catch(SQLException e) {
             System.exit(1);
         }
+    }
+
+    public static void displayAllProducts(Connection connection){
+
+        //we got to try to run a query and get the results with a prepared statement
+        try (PreparedStatement preparedStatement = connection.prepareStatement("""
+                    SELECT
+                        ProductName,
+                        UnitPrice,
+                        UnitsInStock
+                    FROM
+                        Products
+                    ORDER BY
+                        ProductName
+                    """
+        )) {
+               ResultSet results = preparedStatement.executeQuery();
+               printResults(results);  {
+                }
+        } catch (SQLException e){
+                    System.out.println("Could not get all the products");
+                    System.exit(1);
+                }
 
     }
-    // output formatting : stacked info
+    public static void displayAllCustomers(Connection connection){
 
-   public static void printResults(ResultSet results) throws SQLException{
+        //we got to try to run a query and get the results with a prepared statement
+        try (PreparedStatement preparedStatement = connection.prepareStatement("""
+                    SELECT
+                        ContactName,
+                        CompanyName,
+                        City,
+                        Country,
+                        PhoneNumber
+                    FROM
+                        Customers
+                    ORDER BY
+                        ContactName
+                    """
+        )) {
+            ResultSet results = preparedStatement.executeQuery();
+            printResults(results); {
 
-       while (results.next()) {
-           // column values
-           int productID = results.getInt("productID");
-           String productName = results.getString("productName");
-           double unitsInStock = results.getDouble("unitsInStock");
-           double unitPrice = results.getDouble("UnitPrice");
+            }
 
-           System.out.printf("% -5d %-30s %-10.2f %-10f\n",
-                   productID, productName, unitsInStock, unitPrice);
-       }
-   }
-//        // get the metadata so we have access to the fields names
-//        ResultSetMetaData metaData = results.getMetaData();
-//        //get the number of rows returned
-//        int columnCount = metaData.getColumnCount();
-//
-//        //This is looping over all the results from the DB
-//        while (results.next()){
-//
-//            //loop over each column in the row and display the data
-//            for (int i = 1; i <= columnCount; i++){
-//                //gets the current column name
-//                String columnName = metaData.getColumnName(i);
-//                //get the current column value
-//                String value = results.getString(i);
-//                //print out the column name and the column value
-//                System.out.println(columnName + " " + value + " ");
-//            }
-//
-//            //print an empty line to make the results prettier
-//            System.out.println();
-//        }
-//    }
+        } catch (SQLException e){
+                 System.out.println("Could not get all the products");
+                 System.exit(1);
+        }
+    }
+
+    public static void printResults (ResultSet results) throws SQLException {
+        //get the results from the query
+        System.out.printf("%-5s %-30s %-10s %-10s\n",
+                "ID", "Name", "price", "Available");
+        System.out.println("-------------------------------------------------------");
+
+        while (results.next()) {
+            // column values
+            int productID = results.getInt("productID");
+            String productName = results.getString("productName");
+            double unitsInStock = results.getDouble("unitsInStock");
+            int unitPrice = results.getInt("UnitPrice");
+            System.out.printf("% -5d %-30s %-10.2f %-10d\n",
+                    productID, productName, unitsInStock, unitPrice);
+                }
+            }
+
 }
