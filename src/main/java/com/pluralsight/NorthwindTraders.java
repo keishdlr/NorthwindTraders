@@ -71,8 +71,14 @@ public class NorthwindTraders {
             )
         ) {
               try( ResultSet results = preparedStatement.executeQuery()) {
+
+                  System.out.printf("%-35s %-30s %-10s %-10s\n",
+                          "Name", "Price", "ID", "Available");
+                  System.out.println("-------------------------------------------------------------------------------");
+
                   //print the results
                   printResults(results);
+
               }catch (SQLException e){
                   System.out.println("Results error");
               }
@@ -100,6 +106,9 @@ public class NorthwindTraders {
                      )
                  ){
                     try( ResultSet results = preparedStatement.executeQuery()) {
+                        System.out.printf("%-35s %-30s %-10s %-10s\n",
+                                "Customer", "Company", "City", "Country", "Phone");
+                        System.out.println("-------------------------------------------------------------------------------");
 
                          printResults(results);
                  }catch (SQLException e) {
@@ -127,6 +136,9 @@ public class NorthwindTraders {
                 )
         ) {
             try( ResultSet results = preparedStatement.executeQuery()) {
+                System.out.printf("%-35s %-10s\n",
+                        "ID", "Name");
+                System.out.println("-------------------------------------------------------------------------------");
                 //print the results
                 printResults(results);
             }catch (SQLException e){
@@ -156,6 +168,9 @@ public class NorthwindTraders {
             preparedStatement.setInt(2,ID);
 
             try( ResultSet results = preparedStatement.executeQuery()) {
+                System.out.printf("%-35s %-10s\n",
+                        "Name", "ID");
+                System.out.println("-------------------------------------------------------------------------------");
                 //print the results
                 printResults(results);
             }catch (SQLException e){
@@ -167,20 +182,20 @@ public class NorthwindTraders {
         }
 
     }
-
+    //Helper method will be used in the displayMethods to actually print the results to the screen
     public static void printResults (ResultSet results) throws SQLException {
-        //get the results from the query
-        System.out.printf("%-5s %-30s %-10s %-10s\n",
-                "ID", "Name", "price", "Available");
-        System.out.println("-------------------------------------------------------");
-        while (results.next()) {
-            // column values
-            int productID = results.getInt("productID");
-            String productName = results.getString("productName");
-            double unitsInStock = results.getDouble("unitsInStock");
-            int unitPrice = results.getInt("UnitPrice");
-            System.out.printf("% -5d %-30s %-10.2f %-10d\n",
-                    productID, productName, unitsInStock, unitPrice);
-                }
+            // get the metadata so we have access to the fields names
+            ResultSetMetaData metaData = results.getMetaData();
+            //get the number of rows returned
+            int columnCount = metaData.getColumnCount();
+
+            //This is looping over all the results from the DB
+             while (results.next()) {
+            StringBuilder row = new StringBuilder();
+            for (int i = 1; i <= columnCount; i++) {
+                row.append(String.format("%-34s", results.getString(i)));
+            }
+            System.out.println(row.toString());
+             }
     }
 }
